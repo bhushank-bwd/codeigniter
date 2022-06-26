@@ -35,7 +35,9 @@ $routes->set404Override();
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'Home::index');
+$routes->get('/', '\Modules\Welcome\Controllers\Welcome::index');
+
+
 
 /*
  * --------------------------------------------------------------------
@@ -52,4 +54,23 @@ $routes->get('/', 'Home::index');
  */
 if (is_file(APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php')) {
     require APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php';
+}
+
+
+$modules_path = ROOTPATH . 'modules/';
+$modules = scandir($modules_path);
+
+foreach ($modules as $module) {
+    if ($module === '.' || $module === '..') {
+        continue;
+    }
+
+    if (is_dir($modules_path) . '/' . $module) {
+        $routes_path = $modules_path . $module . '/Config/Routes.php';
+        if (file_exists($routes_path)) {
+            require $routes_path;
+        } else {
+            continue;
+        }
+    }
 }
